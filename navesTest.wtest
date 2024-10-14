@@ -1,5 +1,4 @@
 import naves.*
-
 describe "Nave de carga" {
 
 	const naveVacia = new NaveDeCarga()
@@ -37,6 +36,16 @@ describe "Nave de pasajeros" {
 	const naveSinPasajeros = new NaveDePasajeros()
 	const naveConPasajeros = new NaveDePasajeros(cantidadDePasajeros = 296, velocidad = 290000)
 
+
+	test "encontrar enemigo" {
+		naveSinPasajeros.encontrarEnemigo()
+		assert.equals(20000, naveSinPasajeros.velocidad())
+		assert.that(naveSinPasajeros.alarma())
+	}
+	test "preparar" {
+		naveConPasajeros.preparar()
+		assert.equals(300000, naveConPasajeros.velocidad())   
+	}
 	test "velocidad maxima sin pasajeros" {
 		assert.equals(75000, naveSinPasajeros.velocidadMaximaLegal())
 	}
@@ -70,6 +79,17 @@ describe "Nave de combate" {
 	const naveEnReposo = new NaveDeCombate()
 	const naveEnAtaque = new NaveDeCombate(modo = ataque)
 
+	test "preparar" {
+		naveEnAtaque.preparar()
+		assert.equals(15000, naveEnAtaque.velocidad())
+		assert.equals("Volviendo a la base", naveEnAtaque.ultimoMensaje())
+
+		naveEnReposo.preparar() 
+		assert.equals(15000, naveEnReposo.velocidad())
+		assert.equals("Saliendo en misión", naveEnReposo.ultimoMensaje())
+		assert.equals(ataque, naveEnReposo.modo())
+	}
+
 	test "no esta invisible en reposo" {
 		assert.notThat(naveEnReposo.estaInvisible())
 	}
@@ -92,4 +112,24 @@ describe "Nave de combate" {
 		naveEnAtaque.recibirAmenaza()
 		assert.equals("Enemigo encontrado", naveEnAtaque.ultimoMensaje())
 	}
+}
+
+describe "Nave de residuos" {
+
+	const nave = new NaveDeResiduos(velocidad = 10000, carga=5000) 
+	const naveQuieta = new NaveDeResiduos( carga=5000) 
+
+	test "preparar" {
+		naveQuieta.preparar()
+		assert.equals(15000, naveQuieta.velocidad())
+		assert.that(naveQuieta.sellado())
+	}
+	
+	test "recibir amenaza" {
+		nave.recibirAmenaza()
+		assert.equals(5000, nave.carga())
+		assert.equals(0, nave.velocidad())
+		assert.that(nave.sellado())
+	}
+
 }
